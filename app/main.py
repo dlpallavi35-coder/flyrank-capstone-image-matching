@@ -7,6 +7,7 @@ app = FastAPI(
     version="1.0.0"
 )
 from app.models.post import Post
+from app.models.image import Image
 Base.metadata.create_all(bind=engine)
 
 
