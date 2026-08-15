@@ -1,19 +1,24 @@
 from fastapi import FastAPI
 
+from app.database.database import Base, engine
+
 app = FastAPI(
     title="AI Image Understanding & Content Matching Engine",
-    description="FlyRank Backend Capstone",
     version="1.0.0"
 )
+from app.models.post import Post
+Base.metadata.create_all(bind=engine)
+
 
 @app.get("/")
 def root():
     return {
-        "message": "Welcome to the AI Image Understanding & Content Matching Engine!"
+        "message": "AI Image Matching Engine Running"
     }
 
+
 @app.get("/health")
-def health_check():
+def health():
     return {
         "status": "healthy"
     }
