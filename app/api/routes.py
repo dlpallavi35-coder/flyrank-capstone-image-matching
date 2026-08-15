@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from fastapi import UploadFile, File
 import shutil
 import os
+from app.models.image import Image
 from app.database.database import get_db
 from app.models.post import Post
 from app.schemas.post_schema import PostCreate
@@ -39,9 +40,11 @@ def get_post(post_id: int, db: Session = Depends(get_db)):
 
     return post
 @router.post("/images/upload")
-def upload_image(file: UploadFile = File(...)):
+def upload_image(
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db)
+):
     upload_dir = "uploads"
-
     os.makedirs(upload_dir, exist_ok=True)
 
     file_path = os.path.join(upload_dir, file.filename)
@@ -49,8 +52,18 @@ def upload_image(file: UploadFile = File(...)):
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
+    image = Image(
+        filename=file.filename,
+        file_path=file_path
+    )
+
+    db.add(image)
+    db.commit()
+    db.refresh(image)
+
     return {
         "message": "Image uploaded successfully",
-        "filename": file.filename,
-        "path": file_path
+        "image_id": image.id,
+        "filename": image.filename,
+        "path": image.file_path
     }
