@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-
+from fastapi import UploadFile, File
+import shutil
+import os
 from app.database.database import get_db
 from app.models.post import Post
 from app.schemas.post_schema import PostCreate
@@ -36,3 +38,19 @@ def get_post(post_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Post not found")
 
     return post
+@router.post("/images/upload")
+def upload_image(file: UploadFile = File(...)):
+    upload_dir = "uploads"
+
+    os.makedirs(upload_dir, exist_ok=True)
+
+    file_path = os.path.join(upload_dir, file.filename)
+
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    return {
+        "message": "Image uploaded successfully",
+        "filename": file.filename,
+        "path": file_path
+    }
