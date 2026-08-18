@@ -1,6 +1,8 @@
 from google import genai
 from google.genai import types
 from dotenv import load_dotenv
+from pydantic import BaseModel, Field
+from typing import List
 import os
 
 load_dotenv()
@@ -10,8 +12,16 @@ client = genai.Client(
 )
 
 
-def analyze_image(image_path: str):
-    # Determine MIME type from the file extension
+class ImageMetadata(BaseModel):
+    subject: str = Field(description="Main subject visible in the image")
+    category: str = Field(description="General category such as animal, vehicle, food, person, landscape")
+    attributes: List[str] = Field(description="Important visible attributes")
+    caption: str = Field(description="Accurate description of the image")
+    confidence: float = Field(description="Confidence from 0.0 to 1.0")
+
+
+def analyze_image(image_path: str) -> ImageMetadata:
+
     extension = os.path.splitext(image_path)[1].lower()
 
     mime_types = {
@@ -27,7 +37,6 @@ def analyze_image(image_path: str):
     if mime_type is None:
         raise ValueError(f"Unsupported image format: {extension}")
 
-    # Read the actual image bytes
     with open(image_path, "rb") as f:
         image_bytes = f.read()
 
@@ -41,29 +50,32 @@ def analyze_image(image_path: str):
         contents=[
             image,
             """
-            Analyze ONLY the image provided.
+            Analyze ONLY the supplied image.
 
-            Do not use the filename to determine what is in the image.
+            Do not use the filename.
 
-            Return the following:
+            Return:
+            - subject
+            - category
+            - important visible attributes
+            - accurate caption
+            - confidence between 0.0 and 1.0
 
-            1. Detailed Description
-            Describe exactly what is visible in the image.
-
-            2. Objects Present
-            List the main objects visible in the image.
-
-            3. Scene Type
-            Identify the type of scene, such as indoor, outdoor,
-            portrait, animal, food, landscape, vehicle, etc.
-
-            4. Keywords
-            Provide relevant keywords describing the image.
-
-            Be visually accurate. Do not invent objects or scenes
-            that are not visible in the image.
+            Do not invent objects or details that are not visible.
             """
         ],
+        config=types.GenerateContentConfig(
+            response_mime_type="application/json",
+            response_schema=ImageMetadata,
+        ),
     )
 
-    return response.text
+    if not response.parsed:
+        raise ValueError("Gemini returned invalid structured output")
+
+    metadata = response.parsed
+
+    if not 0.0 <= metadata.confidence <= 1.0:
+        raise ValueError("Invalid confidence value")
+
+    return metadata
