@@ -1,0 +1,36 @@
+name: flyrank-capstone-image-matching
+track: backend
+status: completed
+
+description: >
+  Backend service that accepts uploaded images, generates AI-based image
+  descriptions using Google Gemini, stores image and post data in PostgreSQL,
+  and automatically matches uploaded images to the most relevant post.
+
+technology:
+  language: Python
+  framework: FastAPI
+  database: PostgreSQL
+  orm: SQLAlchemy
+  ai: Google Gemini
+  containerization: Docker
+  orchestration: Docker Compose
+
+features:
+  - Image upload API
+  - AI image analysis
+  - Automatic image description generation
+  - Post creation and retrieval APIs
+  - Image-to-post matching
+  - PostgreSQL persistence
+  - Dockerized application
+  - Health check endpoint
+  - Automated tests
+
+endpoints:
+  - GET /
+  - GET /health
+  - POST /posts
+  - GET /posts
+  - GET /posts/{post_id}
+  - POST /images/upload
