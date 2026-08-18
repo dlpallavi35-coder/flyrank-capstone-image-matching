@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -13,6 +13,8 @@ class Image(Base):
     filename = Column(String(255), nullable=False)
 
     file_path = Column(String(500), nullable=False)
+
+    ai_description = Column(Text, nullable=True)
 
     uploaded_at = Column(DateTime(timezone=True), server_default=func.now())
 

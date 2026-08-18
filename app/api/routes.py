@@ -7,6 +7,8 @@ from app.models.image import Image
 from app.database.database import get_db
 from app.models.post import Post
 from app.schemas.post_schema import PostCreate
+from app.services.vision_service import analyze_image
+from app.services.matching_service import find_best_matching_post
 
 router = APIRouter()
 
@@ -52,18 +54,30 @@ def upload_image(
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
+    description = analyze_image(file_path)
+
+    matched_post = find_best_matching_post(
+    image_description=description,
+    db=db
+)
+
     image = Image(
-        filename=file.filename,
-        file_path=file_path
-    )
+    filename=file.filename,
+    file_path=file_path,
+    ai_description=description,
+    post_id=matched_post.id if matched_post else None
+)   
 
     db.add(image)
     db.commit()
     db.refresh(image)
 
     return {
-        "message": "Image uploaded successfully",
-        "image_id": image.id,
-        "filename": image.filename,
-        "path": image.file_path
-    }
+    "message": "Image uploaded successfully",
+    "image_id": image.id,
+    "filename": image.filename,
+    "path": image.file_path,
+    "ai_description": image.ai_description,
+    "matched_post_id": matched_post.id if matched_post else None,
+    "matched_post_title": matched_post.title if matched_post else None
+}
