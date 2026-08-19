@@ -9,16 +9,22 @@ from app.models.post import Post
 from app.schemas.post_schema import PostCreate
 from app.services.vision_service import analyze_image
 from app.services.matching_service import find_best_matching_post
+from app.services.embedding_service import generate_embedding
 
 router = APIRouter()
 
 
 @router.post("/posts")
 def create_post(post: PostCreate, db: Session = Depends(get_db)):
+    post_text = f"{post.title} {post.content}"
+
+    embedding = generate_embedding(post_text)
+
     new_post = Post(
         title=post.title,
         content=post.content,
-        author=post.author
+        author=post.author,
+        embedding=embedding
     )
 
     db.add(new_post)
