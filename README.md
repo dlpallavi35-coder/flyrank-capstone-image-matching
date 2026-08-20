@@ -38,7 +38,7 @@ The project is built with FastAPI, SQLAlchemy, PostgreSQL, Google Gemini, Docker
 
 ---
 
-# Technology Stack
+## Technology Stack
 
 | Technology | Purpose |
 |---|---|
@@ -54,7 +54,7 @@ The project is built with FastAPI, SQLAlchemy, PostgreSQL, Google Gemini, Docker
 
 ---
 
-# System Architecture
+## System Architecture
 
 ```text
 Client
@@ -82,6 +82,13 @@ Validation Guards
    |
    v
 Review Suggestion
+```
+
+---
+
+## Project Structure
+
+```text
 flyrank-capstone-image-matching/
 │
 ├── app/
@@ -122,104 +129,149 @@ flyrank-capstone-image-matching/
 ├── docker-compose.yml
 ├── requirements.txt
 └── README.md
+```
 
-Prerequisites
+---
+
+## Prerequisites
 
 Before running the project, make sure you have:
 
-Docker Desktop
-Docker Compose
-Git
-A Google Gemini API key
-Environment Variables
+- Docker Desktop
+- Docker Compose
+- Git
+- A Google Gemini API key
 
-Create a .env file in the project root directory:
+---
 
+## Environment Variables
+
+Create a `.env` file in the project root directory:
+
+```env
 GEMINI_API_KEY=your_google_gemini_api_key
+```
 
 Do not commit your real API key to GitHub.
 
-Running the Project
+---
+
+## Running the Project
 
 Clone the repository:
 
+```bash
 git clone https://github.com/dlpallavi35-coder/flyrank-capstone-image-matching.git
-
-Move into the project directory:
-
 cd flyrank-capstone-image-matching
+```
 
-Create the .env file and add your Google Gemini API key.
+Create the `.env` file and add your Google Gemini API key.
 
 Start the application:
 
+```bash
 docker compose up --build -d
+```
 
 Check that the containers are running:
 
+```bash
 docker compose ps
+```
 
 The application will run at:
 
+```text
 http://localhost:8000
-API Documentation
+```
+
+---
+
+## API Documentation
 
 FastAPI provides interactive Swagger API documentation.
 
 Open:
 
+```text
 http://localhost:8000/docs
+```
 
 OpenAPI documentation is available at:
 
+```text
 http://localhost:8000/openapi.json
-Available API Endpoints
-Application
-Method	Endpoint	Description
-GET	/	Returns application information
-GET	/health	Returns API health status
+```
+
+---
+
+## Available API Endpoints
+
+### Application
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/` | Returns application information |
+| GET | `/health` | Returns API health status |
 
 Example health response:
 
+```json
 {
   "status": "healthy"
 }
-Posts
-Method	Endpoint	Description
-POST	/posts	Creates a new post
-GET	/posts	Returns all posts
-GET	/posts/{post_id}	Returns a specific post
-GET	/posts/{post_id}/images	Returns the best matching image for a post
+```
+
+### Posts
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/posts` | Creates a new post |
+| GET | `/posts` | Returns all posts |
+| GET | `/posts/{post_id}` | Returns a specific post |
+| GET | `/posts/{post_id}/images` | Returns the best matching image for a post |
 
 When a post is created, the system attempts to generate a semantic embedding using the post title and content.
 
-Images
-Method	Endpoint	Description
-POST	/images/upload	Uploads and processes an image
-POST	/images/{image_id}/approve	Approves an image
-POST	/images/{image_id}/reject	Rejects an image
-GET	/images/{image_id}/review	Returns image review information
-POST	/images/process-batch	Processes missing image embeddings
+### Images
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/images/upload` | Uploads and processes an image |
+| POST | `/images/{image_id}/approve` | Approves an image |
+| POST | `/images/{image_id}/reject` | Rejects an image |
+| GET | `/images/{image_id}/review` | Returns image review information |
+| POST | `/images/process-batch` | Processes missing image embeddings |
 
 Supported image formats:
 
-JPEG
-PNG
-WEBP
-GIF
-Suggestions
-Method	Endpoint	Description
-GET	/suggestions	Returns all suggestions
-GET	/suggestions/{suggestion_id}	Returns a specific suggestion
-POST	/suggestions/{suggestion_id}/approve	Approves a suggestion
-POST	/suggestions/{suggestion_id}/reject	Rejects a suggestion
-AI Usage
-Method	Endpoint	Description
-GET	/ai-usage	Returns AI operation and usage records
-Image Processing Workflow
+- JPEG
+- PNG
+- WEBP
+- GIF
+
+### Suggestions
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/suggestions` | Returns all suggestions |
+| GET | `/suggestions/{suggestion_id}` | Returns a specific suggestion |
+| POST | `/suggestions/{suggestion_id}/approve` | Approves a suggestion |
+| POST | `/suggestions/{suggestion_id}/reject` | Rejects a suggestion |
+
+### AI Usage
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/ai-usage` | Returns AI operation and usage records |
+
+---
+
+## Image Processing Workflow
 
 When an image is uploaded, the following process is performed:
 
+```text
 Image Upload
       |
       v
@@ -251,15 +303,19 @@ Create Review Suggestion
       |
       v
 Return Matching Result
+```
 
 The image metadata includes information such as:
 
-Subject
-Category
-Attributes
-Caption
-Confidence
-Matching and Validation
+- Subject
+- Category
+- Attributes
+- Caption
+- Confidence
+
+---
+
+## Matching and Validation
 
 The matching service compares image embeddings with post embeddings using cosine similarity.
 
@@ -267,125 +323,148 @@ Additional validation guards are used to reduce incorrect matches.
 
 These checks include:
 
-Low-confidence image rejection
-Low-similarity match rejection
-Subject compatibility validation
-Category compatibility validation
-Invalid embedding handling
-Zero-vector protection
-Embedding dimension validation
+- Low-confidence image rejection
+- Low-similarity match rejection
+- Subject compatibility validation
+- Category compatibility validation
+- Invalid embedding handling
+- Zero-vector protection
+- Embedding dimension validation
 
 The system can reject a candidate match when the semantic similarity or image metadata indicates that the image is not compatible with the post.
 
-Review Workflow
+---
+
+## Review Workflow
 
 After image matching, a suggestion is created.
 
 A suggestion can have the following review actions:
 
-Pending
-Approved
-Rejected
+- Pending
+- Approved
+- Rejected
 
 The reviewer can approve or reject a suggested image-to-post match using the API.
 
 Images can also be independently approved or rejected.
 
-Batch Processing
+---
+
+## Batch Processing
 
 The batch processing endpoint processes images that do not yet have embeddings.
 
 The batch service:
 
-Finds images with missing embeddings.
-Generates embeddings.
-Uses retry handling for failed operations.
-Records failed image processing information.
-Returns a processing summary.
+- Finds images with missing embeddings
+- Generates embeddings
+- Uses retry handling for failed operations
+- Records failed image processing information
+- Returns a processing summary
 
 Example response:
 
+```json
 {
   "total": 10,
   "processed": 10,
   "failed": 0,
   "failures": []
 }
-AI Usage Tracking
+```
+
+---
+
+## AI Usage Tracking
 
 The system records AI operations performed by the application.
 
 Tracked operations include:
 
-Image analysis
-Embedding generation
+- Image analysis
+- Embedding generation
 
-The /ai-usage endpoint returns:
+The `/ai-usage` endpoint returns:
 
-Total operations
-Input tokens
-Output tokens
-Estimated cost
-Individual AI usage records
+- Total operations
+- Input tokens
+- Output tokens
+- Estimated cost
+- Individual AI usage records
 
 Example response structure:
 
+```json
 {
   "total_operations": 14,
   "total_input_tokens": 0,
   "total_output_tokens": 0,
   "total_estimated_cost": 0
 }
-Running Tests
+```
+
+---
+
+## Running Tests
 
 Run all automated tests:
 
+```bash
 docker exec image-matching-api python -m pytest -v
+```
 
-Or use:
+Or:
 
+```bash
 docker exec image-matching-api python -m pytest -q
+```
 
 Current verified result:
 
+```text
 23 passed, 1 warning
+```
 
 The automated tests cover:
 
-Root endpoint
-Health endpoint
-Post APIs
-Suggestion APIs
-AI usage API
-Cosine similarity
-Embedding normalization
-Invalid embeddings
-Confidence validation
-Low-confidence rejection
-Low-similarity rejection
-Subject compatibility
-Category compatibility
-Valid image-to-post matching
-Evaluation
+- Root endpoint
+- Health endpoint
+- Post APIs
+- Suggestion APIs
+- AI usage API
+- Cosine similarity
+- Embedding normalization
+- Invalid embeddings
+- Confidence validation
+- Low-confidence rejection
+- Low-similarity rejection
+- Subject compatibility
+- Category compatibility
+- Valid image-to-post matching
+
+---
+
+## Evaluation
 
 The project includes an evaluation dataset and evaluation script.
 
 Run the evaluation using:
 
+```bash
 docker exec image-matching-api python -m evaluation.evaluate
+```
 
 Current verified evaluation result:
 
+```text
 ===== EVALUATION RESULTS =====
-
 
 Total cases: 6
 Correct top-1 predictions: 6
 Top-1 precision: 100.00%
 
-
 Case results:
-
 
 Case 1: expected=1 predicted=1 correct=True
 Case 2: expected=2 predicted=2 correct=True
@@ -393,153 +472,223 @@ Case 3: expected=3 predicted=3 correct=True
 Case 4: expected=1 predicted=1 correct=True
 Case 5: expected=None predicted=None correct=True
 Case 6: expected=None predicted=None correct=True
+```
 
-Evaluation summary:
+### Evaluation Summary
 
-Metric	Result
-Total evaluation cases	6
-Correct predictions	6
-Top-1 precision	100%
+| Metric | Result |
+|---|---|
+| Total evaluation cases | 6 |
+| Correct predictions | 6 |
+| Top-1 precision | 100% |
 
 The 100% result applies to the included 6-case evaluation dataset.
 
-Database Verification
+---
+
+## Database Verification
 
 The PostgreSQL database stores uploaded images and their generated embeddings.
 
 Run:
 
+```bash
 docker exec image-matching-db psql -U postgres -d image_matching_db -c "SELECT COUNT(*) AS total_images, COUNT(embedding) AS images_with_embedding, COUNT(*) - COUNT(embedding) AS images_without_embedding FROM images;"
+```
 
 Current verified result:
 
+```text
  total_images | images_with_embedding | images_without_embedding
 --------------+-----------------------+--------------------------
            12 |                    12 |                        0
+```
 
 This confirms that all 12 stored images currently have embeddings.
 
-Docker Verification
+---
+
+## Docker Verification
 
 Check the running services:
 
+```bash
 docker compose ps
+```
 
 The project uses:
 
-image-matching-api
-image-matching-db
+- `image-matching-api`
+- `image-matching-db`
 
 The API runs on:
 
+```text
 http://localhost:8000
+```
 
 The PostgreSQL database is available through:
 
+```text
 localhost:5432
-Complete Verification Workflow
+```
+
+---
+
+## Complete Verification Workflow
 
 Start or rebuild the application:
 
+```bash
 docker compose up --build -d
+```
 
 Check the containers:
 
+```bash
 docker compose ps
+```
 
 Run automated tests:
 
+```bash
 docker exec image-matching-api python -m pytest -q
+```
 
 Run the evaluation:
 
+```bash
 docker exec image-matching-api python -m evaluation.evaluate
+```
 
 Verify image embeddings:
 
+```bash
 docker exec image-matching-db psql -U postgres -d image_matching_db -c "SELECT COUNT(*) AS total_images, COUNT(embedding) AS images_with_embedding, COUNT(*) - COUNT(embedding) AS images_without_embedding FROM images;"
+```
 
 Check AI usage:
 
+```bash
 curl http://localhost:8000/ai-usage
+```
 
 Open the API documentation:
 
+```text
 http://localhost:8000/docs
-Current Project Results
+```
+
+---
+
+## Current Project Results
 
 The project has been verified with the following results:
 
-Verification	Result
-Automated tests	23 passed
-Evaluation cases	6 / 6 correct
-Top-1 precision on evaluation dataset	100%
-Stored images	12
-Images with embeddings	12
-Images without embeddings	0
-Docker API container	Running
-PostgreSQL container	Running
-AI image analysis	Working
-Embedding generation	Working
-Image-to-post matching	Working
-Review workflow	Implemented
-Batch embedding processing	Implemented
-AI usage tracking	Implemented
-Evidence
+| Verification | Result |
+|---|---|
+| Automated tests | 23 passed |
+| Evaluation cases | 6 / 6 correct |
+| Top-1 precision on evaluation dataset | 100% |
+| Stored images | 12 |
+| Images with embeddings | 12 |
+| Images without embeddings | 0 |
+| Docker API container | Running |
+| PostgreSQL container | Running |
+| AI image analysis | Working |
+| Embedding generation | Working |
+| Image-to-post matching | Working |
+| Review workflow | Implemented |
+| Batch embedding processing | Implemented |
+| AI usage tracking | Implemented |
+
+---
+
+## Evidence
 
 The project was verified using the following commands.
 
-Container verification:
+### Container Verification
 
+```bash
 docker compose ps
+```
 
-Automated tests:
+### Automated Tests
 
+```bash
 docker exec image-matching-api python -m pytest -q
+```
 
 Verified result:
 
+```text
 23 passed, 1 warning
+```
 
-Evaluation:
+### Evaluation
 
+```bash
 docker exec image-matching-api python -m evaluation.evaluate
+```
 
 Verified result:
 
+```text
 Total cases: 6
 Correct top-1 predictions: 6
 Top-1 precision: 100.00%
+```
 
-Database verification:
+### Database Verification
 
+```bash
 docker exec image-matching-db psql -U postgres -d image_matching_db -c "SELECT COUNT(*) AS total_images, COUNT(embedding) AS images_with_embedding, COUNT(*) - COUNT(embedding) AS images_without_embedding FROM images;"
+```
 
 Verified result:
 
+```text
 TOTAL IMAGES: 12
 WITH EMBEDDING: 12
 WITHOUT EMBEDDING: 0
+```
 
 AI usage records confirm that both image analysis and embedding generation operations have been recorded by the application.
 
-Project Status
-Status: Completed
-Track: Backend
+---
+
+## Project Status
+
+**Status:** Completed
+
+**Track:** Backend
 
 The project includes:
 
-AI-powered image analysis
-Semantic embedding generation
-Image-to-post matching
-Matching validation guards
-Review suggestions
-Image approval and rejection
-Batch embedding processing
-AI usage tracking
-PostgreSQL persistence
-Docker deployment
-Docker Compose orchestration
-Automated tests
-Evaluation dataset and evaluation script
-Interactive API documentation
+- AI-powered image analysis
+- Semantic embedding generation
+- Image-to-post matching
+- Matching validation guards
+- Review suggestions
+- Image approval and rejection
+- Batch embedding processing
+- AI usage tracking
+- PostgreSQL persistence
+- Docker deployment
+- Docker Compose orchestration
+- Automated tests
+- Evaluation dataset and evaluation script
+- Interactive API documentation
+
+---
+
+## Repository
+
+GitHub:
+
+https://github.com/dlpallavi35-coder/flyrank-capstone-image-matching
+
+## License
+
+MIT License
