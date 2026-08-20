@@ -1,222 +1,417 @@
-\# Build Log
+# FlyRank Capstone – Build Log
 
+## Project
 
+- Project: flyrank-capstone-image-matching
+- Track: Backend
+- Status: Completed
+- Framework: FastAPI
+- Database: PostgreSQL
+- ORM: SQLAlchemy
+- AI: Google Gemini
+- Deployment: Docker Compose
 
-\## Project
+## 1. Backend Foundation
 
+Implemented the FastAPI backend with:
 
+- Application entry point
+- API routing
+- Database connection
+- SQLAlchemy models
+- PostgreSQL persistence
+- Health endpoint
+- Root endpoint
 
-\*\*FlyRank Backend Track Capstone — Image Matching Backend\*\*
+Verified endpoints:
 
+- `GET /`
+- `GET /health`
 
+## 2. Post Management
 
-\## Overview
+Implemented post management functionality.
 
+Supported operations:
 
+- Create a post
+- Retrieve all posts
+- Retrieve an individual post
+- Retrieve matching images for a post
 
-Built a backend service that accepts image uploads, analyzes images using
+Endpoints:
 
-Google Gemini, stores image metadata and AI descriptions in PostgreSQL, and
+- `POST /posts`
+- `GET /posts`
+- `GET /posts/{post_id}`
+- `GET /posts/{post_id}/images`
 
-matches uploaded images with existing posts.
+Post embeddings are generated from the post title and content.
 
+## 3. AI Image Analysis
 
+Implemented Google Gemini image analysis.
 
-\## Technology Stack
+When an image is uploaded, the application:
 
+1. Validates the image format.
+2. Saves the uploaded image.
+3. Sends the image for AI analysis.
+4. Generates structured image metadata.
+5. Stores the generated description and confidence information.
 
+Image metadata includes:
 
-\- Python
+- Subject
+- Category
+- Attributes
+- Caption
+- Confidence
 
-\- FastAPI
+Supported image formats:
 
-\- PostgreSQL
+- JPEG
+- PNG
+- WEBP
+- GIF
 
-\- SQLAlchemy
+## 4. Semantic Embeddings
 
-\- Google Gemini API
+Implemented semantic embedding generation using:
 
-\- Docker
+`gemini-embedding-001`
 
-\- Docker Compose
+Embeddings are generated for:
 
-\- Pytest
+- Posts
+- Uploaded images
 
+The image embedding is generated from the AI-generated image description.
 
+The embedding service also includes handling for embedding generation failures.
 
-\## Development Steps
+## 5. Image-to-Post Matching
 
+Implemented semantic image-to-post matching.
 
+The matching process:
 
-\### 1. Backend Setup
+1. Generates an image embedding.
+2. Retrieves available post embeddings.
+3. Calculates semantic similarity.
+4. Selects the highest-ranked candidate.
+5. Applies validation guards.
+6. Accepts or rejects the candidate.
+7. Creates a review suggestion.
 
+The matching service uses cosine similarity.
 
+## 6. Matching Validation Guards
 
-Created a FastAPI backend with a modular application structure containing
+Added validation safeguards to reduce incorrect matches.
 
-API routes, database configuration, models, schemas, and services.
+Implemented protections include:
 
+- Low-confidence image rejection
+- Low-similarity rejection
+- Subject compatibility validation
+- Category compatibility validation
+- Invalid embedding handling
+- Zero-vector protection
+- Embedding dimension validation
+- Confidence normalization
 
+Examples covered by automated tests include:
 
-\### 2. PostgreSQL Integration
+- Dog image matching a dog post
+- Wolf image being rejected for a dog post
+- Vehicle image being rejected for a dog post
+- Low-confidence image rejection
+- Low-similarity match rejection
 
+## 7. Review Workflow
 
+Implemented a human review workflow.
 
-Configured PostgreSQL using Docker Compose and SQLAlchemy.
+Suggestions can be:
 
+- Pending
+- Approved
+- Rejected
 
+Suggestion endpoints:
 
-The database contains:
+- `GET /suggestions`
+- `GET /suggestions/{suggestion_id}`
+- `POST /suggestions/{suggestion_id}/approve`
+- `POST /suggestions/{suggestion_id}/reject`
 
+Image review endpoints:
 
+- `POST /images/{image_id}/approve`
+- `POST /images/{image_id}/reject`
+- `GET /images/{image_id}/review`
 
-\- `posts`
+Approved suggestions can associate the image with the selected post.
 
-\- `images`
+## 8. Batch Processing
 
+Implemented batch processing for images that do not have embeddings.
 
+Endpoint:
 
-The `images.post\_id` column is a foreign key referencing `posts.id`.
+`POST /images/process-batch`
 
+The batch service:
 
+- Finds images with missing embeddings.
+- Generates embeddings.
+- Retries failed operations.
+- Records failures.
+- Returns processing statistics.
 
-\### 3. Post APIs
+The verified database currently contains:
 
+- Total images: 12
+- Images with embeddings: 12
+- Images without embeddings: 0
 
+## 9. AI Usage Tracking
 
-Implemented endpoints for:
+Implemented AI operation tracking.
 
+Tracked operations include:
 
+- Image analysis
+- Embedding generation
 
-\- Creating posts
+The application records:
 
-\- Listing posts
+- Operation
+- Model
+- Input tokens
+- Output tokens
+- Estimated cost
+- Creation timestamp
 
-\- Retrieving an individual post
+The API exposes:
 
+`GET /ai-usage`
 
+Verified database records include:
 
-\### 4. Image Upload
+- `gemini-3.6-flash` image analysis operations
+- `gemini-embedding-001` embedding operations
 
+## 10. Dockerization
 
+Containerized the application using Docker.
 
-Implemented `POST /images/upload`.
+The project contains:
 
+- `Dockerfile`
+- `docker-compose.yml`
 
+Docker Compose runs:
 
-The endpoint:
+- FastAPI API container
+- PostgreSQL database container
 
+Services:
 
+- `image-matching-api`
+- `image-matching-db`
 
-1\. Accepts an image file.
+The API is exposed on port `8000`.
 
-2\. Saves the uploaded image.
+PostgreSQL is exposed on port `5432`.
 
-3\. Sends the image to the Gemini vision model.
+## 11. Database Persistence
 
-4\. Generates an AI description.
+Implemented PostgreSQL persistence for:
 
-5\. Finds the best matching post.
+- Posts
+- Images
+- Image embeddings
+- Suggestions
+- AI usage records
 
-6\. Stores the image metadata and matched post ID.
+The PostgreSQL database uses a persistent Docker volume.
 
-7\. Returns the matching information.
+Current verified image database state:
 
+```text
+Total images: 12
+Images with embeddings: 12
+Images without embeddings: 0
+12. Automated Testing
 
+Implemented automated tests using Pytest.
 
-\### 5. AI Image Analysis
+Test areas include:
 
+API endpoints
+Image analysis
+Matching service
+Cosine similarity
+Embedding normalization
+Confidence validation
+Matching guards
+Suggestion API
+AI usage API
 
+Verified result:
 
-Integrated Google Gemini for image understanding.
+23 passed, 1 warning
 
+Command used:
 
+docker exec image-matching-api python -m pytest -q
+13. Evaluation System
 
-The image is sent as image bytes with its MIME type so that the model
+Created an evaluation dataset and evaluation script.
 
-analyzes the actual image rather than relying on the filename.
+Files:
 
+evaluation/dataset.json
+evaluation/evaluate.py
 
+The evaluation measures top-1 matching accuracy.
 
-The generated response contains:
+Verified result:
 
+Total cases: 6
+Correct top-1 predictions: 6
+Top-1 precision: 100.00%
 
+All six evaluation cases were classified correctly.
 
-\- Detailed description
+The evaluation includes both positive matching cases and negative/no-match cases.
 
-\- Objects present
+14. API Documentation
 
-\- Scene type
+FastAPI automatically provides interactive Swagger documentation.
 
-\- Keywords
+Available at:
 
+http://localhost:8000/docs
 
+OpenAPI specification:
 
-\### 6. Image-to-Post Matching
+http://localhost:8000/openapi.json
 
+The API documentation was verified to load successfully.
 
+15. Integration Verification
 
-Implemented a matching service that compares the generated image description
+The complete application was rebuilt using:
 
-with existing post title and content.
+docker compose down
+docker compose up --build -d
 
+The containers started successfully.
 
+Verified services:
 
-The post with the highest number of common words is selected as the best
+image-matching-api
+image-matching-db
 
-match.
+The API successfully served:
 
+/
+/health
+/posts
+/docs
+/openapi.json
 
+The image upload workflow was also exercised against the running API.
 
-\### 7. Dockerization
+16. Final Verification
 
+Automated tests:
 
+23 passed, 1 warning
 
-Configured Docker and Docker Compose for the FastAPI application and
+Evaluation:
 
-PostgreSQL database.
+6 / 6 correct
+100.00% top-1 precision
 
+Database:
 
+12 total images
+12 images with embeddings
+0 images without embeddings
 
-The application and database run as separate containers.
+AI usage:
 
+Image analysis records: present
+Embedding records: present
 
+Docker:
 
-\### 8. Testing
+API container: running
+PostgreSQL container: running
+17. Final Implementation
 
+The completed implementation contains:
 
+app/
+├── api/
+│   └── routes.py
+├── database/
+│   └── database.py
+├── models/
+│   ├── __init__.py
+│   ├── image.py
+│   ├── post.py
+│   ├── suggestion.py
+│   └── ai_usage.py
+├── services/
+│   ├── embedding_service.py
+│   ├── matching_service.py
+│   ├── vision_service.py
+│   ├── batch_service.py
+│   └── cost_service.py
+└── main.py
 
-Configured Pytest and verified the test suite.
 
+evaluation/
+├── dataset.json
+└── evaluate.py
 
 
-The current test run completes successfully with no failed tests.
+tests/
+├── __init__.py
+├── test_api.py
+└── test_matching_service.py
 
 
+Dockerfile
+docker-compose.yml
+requirements.txt
+README.md
+EVIDENCE.md
+BUILDLOG.md
+ 18. Final Status
 
-\## Verification
+The backend capstone implementation is complete and has been verified through:
 
+Docker Compose deployment
+PostgreSQL persistence
+FastAPI API verification
+Google Gemini integration
+Semantic embedding generation
+Image-to-post matching
+Matching validation
+Human review workflow
+Batch processing
+AI usage tracking
+Automated tests
+Evaluation dataset
+Evaluation script
+Swagger documentation
 
+Final verified status:
 
-Verified:
-
-
-
-\- FastAPI application starts successfully.
-
-\- `/health` responds successfully.
-
-\- `/docs` and `/openapi.json` are accessible.
-
-\- PostgreSQL tables are created.
-
-\- Posts can be stored and retrieved.
-
-\- Images can be uploaded.
-
-\- Gemini generates image descriptions.
-
-\- Uploaded images are associated with matching posts.
-
-\- Docker containers run successfully.
-
+PROJECT STATUS: COMPLETED
