@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "image_description": "A happy dog sitting inside an office.",
+    "expected_post_id": 1
+  },
+  {
+    "id": 2,
+    "image_description": "A pet dog enjoying time indoors with people.",
+    "expected_post_id": 2
+  },
+  {
+    "id": 3,
+    "image_description": "A vintage tram traveling through a city.",
+    "expected_post_id": 3
+  },
+  {
+    "id": 4,
+    "image_description": "A dog sitting happily at an office desk.",
+    "expected_post_id": 1
+  },
+  {
+    "id": 5,
+    "image_description": "A fox standing in a natural environment.",
+    "expected_post_id": null
+  },
+  {
+    "id": 6,
+    "image_description": "A wolf walking through a forest.",
+    "expected_post_id": null
+  }
+]
