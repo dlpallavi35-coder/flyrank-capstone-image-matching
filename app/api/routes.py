@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from fastapi import APIRouter, BackgroundTasks, Depends, File, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
 from app.database.database import SessionLocal
@@ -505,13 +505,35 @@ def inspect_image_review(
 # -------------------------------------------------------------
 
 
-@router.post("/images/process-batch")
+def run_batch_job():
+    """
+    Run batch processing in the background using
+    an independent database session.
+    """
+    db = SessionLocal()
+
+    try:
+        process_image_embeddings(db)
+    finally:
+        db.close()
+
+
+@router.post("/images/process-batch", status_code=202)
 def process_images_batch(
-    db: Session = Depends(get_db),
+    background_tasks: BackgroundTasks,
 ):
-    return process_image_embeddings(db)
+    """
+    Start image embedding processing as a background job.
 
+    The HTTP request returns immediately instead of waiting
+    for all AI embedding operations to finish.
+    """
+    background_tasks.add_task(run_batch_job)
 
+    return {
+        "status": "started",
+        "message": "Image embedding batch processing started in the background",
+    }
 # -------------------------------------------------------------
 # AI usage / cost tracking
 # -------------------------------------------------------------
