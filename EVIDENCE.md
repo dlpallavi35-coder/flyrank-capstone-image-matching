@@ -128,14 +128,14 @@ docker exec image-matching-db psql -U postgres -d image_matching_db -c "SELECT C
 ```text
  total_images | images_with_embedding | images_without_embedding
 --------------+-----------------------+--------------------------
-           12 |                    12 |                        0
+           13 |                    13 |                        0
 ```
 
 ### Result
 
 ```text
-Total images: 12
-Images with embeddings: 12
+Total images: 13
+Images with embeddings: 13
 Images without embeddings: 0
 ```
 
@@ -385,11 +385,17 @@ The batch processing service handles images that do not have embeddings.
 The current database verification shows:
 
 ```text
-Total images: 12
-Images with embeddings: 12
+Total images: 13
+Images with embeddings: 13
 Images without embeddings: 0
 ```
+### Verified Batch Endpoint Result
 
+```text
+HTTP/1.1 202 Accepted
+
+{"status":"started","message":"Image embedding batch processing started in the background"}
+```
 ---
 
 ## 16. Complete Verification Commands
