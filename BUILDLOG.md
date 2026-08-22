@@ -214,14 +214,14 @@ Verified result:
 ```text
 total_images | images_with_embedding | images_without_embedding
 -------------+-----------------------+--------------------------
-12           | 12                    | 0
+13           | 13                    | 0
 ```
 
 Therefore:
 
 ```text
-Total images: 12
-Images with embeddings: 12
+Total images: 13
+Images with embeddings: 13
 Images without embeddings: 0
 ```
 
@@ -281,8 +281,8 @@ The batch service:
 The database verification currently shows:
 
 ```text
-12 images
-12 embeddings
+13 images
+13 embeddings
 0 missing embeddings
 ```
 
@@ -417,8 +417,8 @@ The project was verified with:
 23 automated tests passing
 6/6 evaluation cases correct
 100% top-1 precision on the included evaluation dataset
-12 stored images
-12 images with embeddings
+13 stored images
+13 images with embeddings
 0 images without embeddings
 Gemini DNS resolution working
 TCP 443 connectivity working

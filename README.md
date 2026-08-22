@@ -501,10 +501,10 @@ Current verified result:
 ```text
  total_images | images_with_embedding | images_without_embedding
 --------------+-----------------------+--------------------------
-           12 |                    12 |                        0
+           13 |                    13 |                        0
 ```
 
-This confirms that all 12 stored images currently have embeddings.
+This confirms that all 13 stored images currently have embeddings.
 
 ---
 
@@ -590,8 +590,8 @@ The project has been verified with the following results:
 | Automated tests | 23 passed |
 | Evaluation cases | 6 / 6 correct |
 | Top-1 precision on evaluation dataset | 100% |
-| Stored images | 12 |
-| Images with embeddings | 12 |
+| Stored images | 13 |
+| Images with embeddings | 13 |
 | Images without embeddings | 0 |
 | Docker API container | Running |
 | PostgreSQL container | Running |
@@ -649,15 +649,21 @@ docker exec image-matching-db psql -U postgres -d image_matching_db -c "SELECT C
 Verified result:
 
 ```text
-TOTAL IMAGES: 12
-WITH EMBEDDING: 12
+TOTAL IMAGES: 13
+WITH EMBEDDING: 13
 WITHOUT EMBEDDING: 0
 ```
 
 AI usage records confirm that both image analysis and embedding generation operations have been recorded by the application.
 
 ---
+## Limitations
 
+- The evaluation dataset contains six cases, so the reported 100% top-1 precision applies only to this included evaluation dataset.
+- The current demonstration corpus is smaller than a production-scale image collection.
+- Gemini API availability and response quality can affect image analysis and embedding generation.
+- The batch processor uses FastAPI background tasks and is intended for this capstone-scale workload rather than a distributed production job queue.
+- AI usage cost estimates depend on the usage information returned by the configured AI services.
 ## Project Status
 
 **Status:** Completed

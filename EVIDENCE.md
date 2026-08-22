@@ -455,8 +455,8 @@ docker exec image-matching-api python -c "import ssl,socket; s=socket.create_con
 | Evaluation cases | 6 |
 | Correct evaluation predictions | 6 |
 | Evaluation precision | 100% |
-| Stored images | 12 |
-| Images with embeddings | 12 |
+| Stored images | 13 |
+| Images with embeddings | 13 |
 | Images without embeddings | 0 |
 | Image analysis records | Present |
 | Embedding records | Present |
